@@ -1,0 +1,30 @@
+{
+    "localhost": {
+        "launch_type": {
+            "manual": 166,
+            "workflow": 33,
+            "relaunch": 3,
+            "dependency": 1,
+            "scheduled": 22771,
+            "callback": 3
+        },
+        "status": {
+            "successful": 11707,
+            "failed": 11261,
+            "canceled": 5,
+            "error": 4
+        }
+    },
+    "": {
+        "launch_type": {
+            "manual": 19,
+            "workflow": 12,
+            "relaunch": 1
+        },
+        "status": {
+            "successful": 21,
+            "failed": 9,
+            "canceled": 2
+        }
+    }
+}

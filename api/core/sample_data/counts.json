@@ -1,0 +1,26 @@
+{
+    "organization": 22,
+    "team": 7,
+    "user": 14,
+    "inventory": 17,
+    "credential": 48,
+    "project": 11,
+    "job_template": 54,
+    "workflow_job_template": 4,
+    "host": 8,
+    "schedule": 15,
+    "custom_inventory_script": 8,
+    "notification_template": 2,
+    "custom_virtualenvs": 0,
+    "inventories": {
+        "smart": 2,
+        "normal": 15
+    },
+    "unified_job": 23009,
+    "active_host_count": 7,
+    "active_sessions": 0,
+    "active_user_sessions": 0,
+    "active_anonymous_sessions": 0,
+    "running_jobs": 0,
+    "pending_jobs": 0
+}

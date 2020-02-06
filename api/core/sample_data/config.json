@@ -1,0 +1,33 @@
+{
+    "platform": {
+        "system": "Linux",
+        "dist": [
+            "redhat",
+            "7.7",
+            "Maipo"
+        ],
+        "release": "3.10.0-1062.el7.x86_64",
+        "type": "traditional"
+    },
+    "install_uuid": "ba8dbb23-c19d-4aef-a668-c971f4170b43",
+    "instance_uuid": "79dbb930-b01e-4732-a3ab-ba67432ee084",
+    "tower_url_base": "https://ec2-52-90-106-58.compute-1.amazonaws.com",
+    "tower_version": "3.6.0",
+    "ansible_version": "2.10.0.dev0",
+    "license_type": "enterprise",
+    "free_instances": 0,
+    "license_expiry": 162909079,
+    "pendo_tracking": "off",
+    "authentication_backends": [
+        "awx.sso.backends.TACACSPlusBackend",
+        "django.contrib.auth.backends.ModelBackend"
+    ],
+    "logging_aggregators": [
+        "awx",
+        "activity_stream",
+        "job_events",
+        "system_tracking"
+    ],
+    "external_logger_enabled": false,
+    "external_logger_type": null
+}

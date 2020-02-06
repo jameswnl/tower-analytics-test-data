@@ -1,0 +1,102 @@
+{
+    "5": {
+        "name": "Amazon Web Services",
+        "credential_count": 2,
+        "managed_by_tower": true
+    },
+    "14": {
+        "name": "Ansible Tower",
+        "credential_count": 0,
+        "managed_by_tower": true
+    },
+    "31": {
+        "name": "credentialType-7a523626",
+        "credential_count": 0,
+        "managed_by_tower": false
+    },
+    "10": {
+        "name": "Google Compute Engine",
+        "credential_count": 2,
+        "managed_by_tower": true
+    },
+    "11": {
+        "name": "Microsoft Azure Resource Manager",
+        "credential_count": 0,
+        "managed_by_tower": true
+    },
+    "6": {
+        "name": "OpenStack",
+        "credential_count": 0,
+        "managed_by_tower": true
+    },
+    "9": {
+        "name": "Red Hat CloudForms",
+        "credential_count": 0,
+        "managed_by_tower": true
+    },
+    "8": {
+        "name": "Red Hat Satellite 6",
+        "credential_count": 0,
+        "managed_by_tower": true
+    },
+    "13": {
+        "name": "Red Hat Virtualization",
+        "credential_count": 0,
+        "managed_by_tower": true
+    },
+    "7": {
+        "name": "VMware vCenter",
+        "credential_count": 0,
+        "managed_by_tower": true
+    },
+    "15": {
+        "name": "CyberArk AIM Secret Lookup",
+        "credential_count": 0,
+        "managed_by_tower": true
+    },
+    "17": {
+        "name": "CyberArk Conjur Secret Lookup",
+        "credential_count": 0,
+        "managed_by_tower": true
+    },
+    "18": {
+        "name": "HashiCorp Vault Secret Lookup",
+        "credential_count": 0,
+        "managed_by_tower": true
+    },
+    "19": {
+        "name": "HashiCorp Vault Signed SSH",
+        "credential_count": 0,
+        "managed_by_tower": true
+    },
+    "16": {
+        "name": "Microsoft Azure Key Vault",
+        "credential_count": 0,
+        "managed_by_tower": true
+    },
+    "12": {
+        "name": "Insights",
+        "credential_count": 1,
+        "managed_by_tower": true
+    },
+    "4": {
+        "name": "Network",
+        "credential_count": 1,
+        "managed_by_tower": true
+    },
+    "2": {
+        "name": "Source Control",
+        "credential_count": 1,
+        "managed_by_tower": true
+    },
+    "1": {
+        "name": "Machine",
+        "credential_count": 38,
+        "managed_by_tower": true
+    },
+    "3": {
+        "name": "Vault",
+        "credential_count": 3,
+        "managed_by_tower": true
+    }
+}

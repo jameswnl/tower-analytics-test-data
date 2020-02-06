@@ -1,0 +1,12 @@
+{
+    "79dbb930-b01e-4732-a3ab-ba67432ee084": {
+        "uuid": "79dbb930-b01e-4732-a3ab-ba67432ee084",
+        "version": "3.6.0",
+        "capacity": 54,
+        "cpu": 2,
+        "memory": 7890984960,
+        "managed_by_policy": true,
+        "last_isolated_check": null,
+        "enabled": true
+    }
+}

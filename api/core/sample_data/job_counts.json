@@ -1,0 +1,1 @@
+{"total_jobs": 23009, "status": {"successful": 11728, "failed": 11270, "error": 4, "canceled": 7}, "launch_type": {"workflow": 45, "manual": 185, "scheduled": 22771, "relaunch": 4, "callback": 3, "dependency": 1}}

@@ -1,0 +1,104 @@
+{
+    "281": {
+        "name": "Cloud",
+        "kind": "",
+        "hosts": 0,
+        "sources": 0
+    },
+    "278": {
+        "name": "Database Servers",
+        "kind": "",
+        "hosts": 1,
+        "sources": 0
+    },
+    "280": {
+        "name": "Default",
+        "kind": "",
+        "hosts": 0,
+        "sources": 0
+    },
+    "1": {
+        "name": "Demo Inventory",
+        "kind": "",
+        "hosts": 1,
+        "sources": 0
+    },
+    "276": {
+        "name": "<div class=\"xss\">t</div>-inventory",
+        "kind": "",
+        "hosts": 1,
+        "sources": 0
+    },
+    "275": {
+        "name": "<div id=\"xss\" class=\"xss\">test</div>-inventory",
+        "kind": "",
+        "hosts": 1,
+        "sources": 1
+    },
+    "262": {
+        "name": "e2e-5d7b8bbf-inventory",
+        "kind": "",
+        "hosts": 1,
+        "sources": 0
+    },
+    "272": {
+        "name": "external-org-inventory",
+        "kind": "",
+        "hosts": 1,
+        "sources": 1
+    },
+    "261": {
+        "name": "inventory-77c38ff0",
+        "kind": "",
+        "hosts": 1,
+        "sources": 0
+    },
+    "283": {
+        "name": "IT",
+        "kind": "",
+        "hosts": 0,
+        "sources": 0
+    },
+    "279": {
+        "name": "King PLC",
+        "kind": "",
+        "hosts": 0,
+        "sources": 0
+    },
+    "282": {
+        "name": "Network",
+        "kind": "",
+        "hosts": 0,
+        "sources": 0
+    },
+    "285": {
+        "name": "Product",
+        "kind": "",
+        "hosts": 0,
+        "sources": 0
+    },
+    "284": {
+        "name": "Sales",
+        "kind": "",
+        "hosts": 0,
+        "sources": 0
+    },
+    "274": {
+        "name": "test-actions-f5aeceef-inventory",
+        "kind": "",
+        "hosts": 1,
+        "sources": 1
+    },
+    "277": {
+        "name": "<div id=\"xss\" class=\"xss\">test</div>-smart-inventory",
+        "kind": "smart",
+        "num_hosts": 0,
+        "num_sources": 0
+    },
+    "263": {
+        "name": "e2e-5d7b8bbf-smart-inventory",
+        "kind": "smart",
+        "num_hosts": 0,
+        "num_sources": 0
+    }
+}
