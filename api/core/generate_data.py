@@ -135,6 +135,7 @@ class TestDataGenerator:
         start = time.time()
         end = time.time()
         print ('handle_analytics_bundle time:', end-start, 's')
+        return data_bundle
         # shutil.rmtree(temp_dir)
 
 
