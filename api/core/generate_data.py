@@ -1,11 +1,11 @@
 import datetime
-import pkgutil
-import json
-import tempfile
-import os
 import io
-import tarfile
+import json
+import os
+import pkgutil
 import shutil
+import tarfile
+import tempfile
 import time
 
 
@@ -26,6 +26,10 @@ FILES = [ 'config.json',
 
 
 class TestDataGenerator:
+    def __init__(self, bundle_dir):
+        self.bundle_dir = bundle_dir
+
+
     def add_arguments(self, parser):
         parser.add_argument("tenant_id", type=int, help="tenant")
         parser.add_argument(
@@ -50,8 +54,7 @@ class TestDataGenerator:
             with open(os.path.join(temp_dir, filename), 'wb') as f:
                 f.write(data[filename])
 
-    def build_tarfile(self, temp_dir):
-        data_bundle = os.path.join(temp_dir, 'data_bundle.tar.gz')
+    def build_tarfile(self, temp_dir, data_bundle):
         os.chdir(temp_dir)
         with tarfile.open(data_bundle, 'w:gz') as tar:
             for filename in FILES:
@@ -125,17 +128,20 @@ class TestDataGenerator:
         data['events_table.csv'] = output.getvalue().encode()
 
     def handle(self, bundle_config):
+        start = time.time()
         temp_dir = tempfile.mkdtemp()
         data = self.read_sample_data()
         self.generate_unified_jobs(data, bundle_config.unified_jobs)
         self.generate_job_events(data, bundle_config.unified_jobs, bundle_config.job_events)
         self.write_data(temp_dir, data)
-        data_bundle = self.build_tarfile(temp_dir)
-        print("bundle created: {}, size={}".format(data_bundle, os.stat(data_bundle).st_size))
-        start = time.time()
+        data_bundle = os.path.join(self.bundle_dir, '{}_data_bundle.tar.gz'.format(bundle_config.uuid))
+        self.build_tarfile(temp_dir, data_bundle)
+        print("bundle created: tempdir={}, bundle={}, size={}".format(temp_dir, data_bundle, os.stat(data_bundle).st_size))
         end = time.time()
         print ('handle_analytics_bundle time:', end-start, 's')
+        shutil.rmtree(temp_dir)
         return data_bundle
-        # shutil.rmtree(temp_dir)
 
 
+    def get_bundle_file(self, bundle_id):
+        return os.path.join(self.bundle_dir, '{}_data_bundle.tar.gz'.format(bundle_id))
