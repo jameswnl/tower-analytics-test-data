@@ -10,4 +10,4 @@ RUN pipenv install --deploy --ignore-pipfile
 
 EXPOSE 8000
 
-CMD ["pipenv", "run", "uvicorn", "api.main:app"]
+CMD ["pipenv", "run", "gunicorn", "-w 2", "-b 0.0.0.0:8000", "-k uvicorn.workers.UvicornWorker", "api.main:app"]

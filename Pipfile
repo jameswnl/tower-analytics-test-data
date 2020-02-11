@@ -11,6 +11,7 @@ pylama = "*"
 [packages]
 fastapi = {extras = ["all"],version = "*"}
 uvicorn = "*"
+gunicorn = "*"
 
 [requires]
 python_version = "3.6"
