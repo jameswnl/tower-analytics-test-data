@@ -6,10 +6,10 @@ from pydantic import BaseModel
 from starlette.responses import FileResponse
 from starlette.middleware.cors import CORSMiddleware
 
-from .core.generate_data import TestDataGenerator
+from .core.generate_data import TestDataGenerator, get_bundle_file
 
 
-BUNDLE_DIR = os.environ.get('BUNDLE_DIR', os.path.join(os.getcwd(), 'BUNDLE_DIR'))
+BUNDLE_DIR = os.environ.get('BUNDLE_DIR', '/BUNDLE_DIR')
 
 class BundleConfig(BaseModel):
     unified_jobs: int
@@ -27,7 +27,7 @@ async def root():
 
 @app.post("/bundles/")
 async def create_bundle(config: BundleConfig):
-    generator = TestDataGenerator(BUNDLE_DIR)
+    generator = TestDataGenerator()
     id = str(uuid.uuid1())
     config = BundleConfig(unified_jobs=4, job_events=4, uuid=id)
     generator.handle(config)
@@ -35,8 +35,7 @@ async def create_bundle(config: BundleConfig):
 
 
 @app.get("/bundles/{bundle_id}")
-async def get_bundle(bundle_id: str):
-    generator = TestDataGenerator(BUNDLE_DIR)
-    return FileResponse(generator.get_bundle_file(bundle_id), media_type="application/gzip")
+def get_bundle(bundle_id: str):
+    return FileResponse(get_bundle_file(bundle_id), media_type="application/gzip")
 
 

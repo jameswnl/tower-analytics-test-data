@@ -8,6 +8,7 @@ import tarfile
 import tempfile
 import time
 
+BUNDLE_DIR = os.environ.get('BUNDLE_DIR', '/BUNDLE_DIR')
 
 FILES = [ 'config.json',
           'counts.json',
@@ -26,10 +27,6 @@ FILES = [ 'config.json',
 
 
 class TestDataGenerator:
-    def __init__(self, bundle_dir):
-        self.bundle_dir = bundle_dir
-
-
     def add_arguments(self, parser):
         parser.add_argument("tenant_id", type=int, help="tenant")
         parser.add_argument(
@@ -134,7 +131,7 @@ class TestDataGenerator:
         self.generate_unified_jobs(data, bundle_config.unified_jobs)
         self.generate_job_events(data, bundle_config.unified_jobs, bundle_config.job_events)
         self.write_data(temp_dir, data)
-        data_bundle = os.path.join(self.bundle_dir, '{}_data_bundle.tar.gz'.format(bundle_config.uuid))
+        data_bundle = os.path.join(BUNDLE_DIR, '{}_data_bundle.tar.gz'.format(bundle_config.uuid))
         self.build_tarfile(temp_dir, data_bundle)
         print("bundle created: tempdir={}, bundle={}, size={}".format(temp_dir, data_bundle, os.stat(data_bundle).st_size))
         end = time.time()
@@ -143,5 +140,5 @@ class TestDataGenerator:
         return data_bundle
 
 
-    def get_bundle_file(self, bundle_id):
-        return os.path.join(self.bundle_dir, '{}_data_bundle.tar.gz'.format(bundle_id))
+def get_bundle_file(self, bundle_id):
+    return os.path.join(BUNDLE_DIR, '{}_data_bundle.tar.gz'.format(bundle_id))
