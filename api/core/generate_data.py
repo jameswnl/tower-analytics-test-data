@@ -140,5 +140,5 @@ class TestDataGenerator:
         return data_bundle
 
 
-def get_bundle_file(self, bundle_id):
+def get_bundle_file(bundle_id):
     return os.path.join(BUNDLE_DIR, '{}_data_bundle.tar.gz'.format(bundle_id))
