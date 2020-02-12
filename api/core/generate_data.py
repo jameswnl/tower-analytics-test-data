@@ -1,5 +1,5 @@
 import datetime
-import io   
+import io
 import json
 import logging
 import os
@@ -18,32 +18,23 @@ KAFKA_HOST = os.environ.get('KAFKA_HOST', 'kafka')
 KAFKA_PORT = os.environ.get('KAFKA_PORT', '9092')
 KAFKA_TOPIC = 'platform.upload.tower'
 LOGGER = logging.getLogger('tower-analytics-test-data.generate_data')
-FILES = [ 'config.json',
-          'counts.json',
-          'cred_type_counts.json',
-          'events_table.csv',
-          'instance_info.json',
-          'inventory_counts.json',
-          'job_counts.json',
-          'job_instance_counts.json',
-          'manifest.json',
-          'org_counts.json',
-          'projects_by_scm_type.json',
-          'query_info.json',
-          'unified_job_template_table.csv',
-          'unified_jobs_table.csv' ]
+FILES = ['config.json',
+         'counts.json',
+         'cred_type_counts.json',
+         'events_table.csv',
+         'instance_info.json',
+         'inventory_counts.json',
+         'job_counts.json',
+         'job_instance_counts.json',
+         'manifest.json',
+         'org_counts.json',
+         'projects_by_scm_type.json',
+         'query_info.json',
+         'unified_job_template_table.csv',
+         'unified_jobs_table.csv']
 
 
 class TestDataGenerator:
-    def add_arguments(self, parser):
-        parser.add_argument("tenant_id", type=int, help="tenant")
-        parser.add_argument(
-            "job_events", type=int, help="length of job events table"
-        )
-        parser.add_argument(
-            "unified_jobs", type=int, help="length of unified jobs table"
-        )
-
     def _default_date_time(self, days_ago=0, seconds=0):
         date = datetime.datetime.now() - datetime.timedelta(days=days_ago)
         date = date.replace(
@@ -86,7 +77,7 @@ class TestDataGenerator:
         for job_id in range(n):
             output.write('{4},37,job,1,Default,{0},verify,471,scheduled,19,localhost,"",'
                          'f,{1},f,{2},{3},5.873,"",'
-                         '1\n'.format(self._default_date_time(job_id % 100 + 1), # jobs spread 100 days back
+                         '1\n'.format(self._default_date_time(job_id % 100 + 1),  # jobs spread 100 days back
                                       self._failed_job(job_id),
                                       self._default_date_time(job_id % 100 + 1, 1),
                                       self._default_date_time(job_id % 100 + 1, 5),
@@ -122,7 +113,7 @@ class TestDataGenerator:
             for event_id in range(events_count):
                 output.write('{4},{0},374c9e9c-561c-4222-acd4-91189dd95b1d,"",verbose_{5},verbose_module_{5},{1},{2},'
                              '"","","super_task_{5}","",{3},,""\n'.format(
-                                self._default_date_time(job_id % 100 + 1, event_id%60), # events spread 100 days back
+                                self._default_date_time(job_id % 100 + 1, event_id % 60),  # events spread 100 days back
                                 self._failed_event(event_id),
                                 self._changed_event(event_id),
                                 job_id,
@@ -160,6 +151,7 @@ PRODUCER = KafkaProducer(
     value_serializer=lambda m: json.dumps(m).encode('ascii')
 )
 
+
 def on_send_success(record_metadata):
     LOGGER.info(record_metadata.topic)
     LOGGER.info(record_metadata.partition)
@@ -195,7 +187,7 @@ def notify_upload(url, account_id, tenanat_id, bundle_id):
         'principal': tenanat_id,
         'request_id': bundle_id,
         'service': 'tower',
-        'size': bundle_size, 
+        'size': bundle_size,
         'timestamp': '2020-01-30T18:04:29.364338988Z',
         'url': '{}/bundles/{}'.format(url, bundle_id)
     }
