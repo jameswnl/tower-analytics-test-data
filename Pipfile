@@ -12,6 +12,7 @@ pylama = "*"
 fastapi = {extras = ["all"],version = "*"}
 uvicorn = "*"
 gunicorn = "*"
+kafka-python = "*"
 
 [requires]
 python_version = "3.6"

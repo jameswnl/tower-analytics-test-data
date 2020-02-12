@@ -1,6 +1,7 @@
 import datetime
-import io
+import io   
 import json
+import logging
 import os
 import pkgutil
 import shutil
@@ -8,8 +9,15 @@ import tarfile
 import tempfile
 import time
 
-BUNDLE_DIR = os.environ.get('BUNDLE_DIR', '/BUNDLE_DIR')
+from kafka import KafkaProducer
+from kafka.errors import KafkaError
 
+
+BUNDLE_DIR = os.environ.get('BUNDLE_DIR', '/BUNDLE_DIR')
+KAFKA_HOST = os.environ.get('KAFKA_HOST', 'kafka')
+KAFKA_PORT = os.environ.get('KAFKA_PORT', '9092')
+KAFKA_TOPIC = 'platform.upload.tower'
+LOGGER = logging.getLogger('tower-analytics-test-data.generate_data')
 FILES = [ 'config.json',
           'counts.json',
           'cred_type_counts.json',
@@ -131,14 +139,57 @@ class TestDataGenerator:
         self.generate_unified_jobs(data, bundle_config.unified_jobs)
         self.generate_job_events(data, bundle_config.unified_jobs, bundle_config.job_events)
         self.write_data(temp_dir, data)
-        data_bundle = os.path.join(BUNDLE_DIR, '{}_data_bundle.tar.gz'.format(bundle_config.uuid))
+        data_bundle = os.path.join(
+            BUNDLE_DIR,
+            '{}_data_bundle.tar.gz'.format(bundle_config.uuid))
         self.build_tarfile(temp_dir, data_bundle)
-        print("bundle created: tempdir={}, bundle={}, size={}".format(temp_dir, data_bundle, os.stat(data_bundle).st_size))
+        LOGGER.info("bundle created: tempdir={}, bundle={}, size={}".format(
+                    temp_dir, data_bundle, os.stat(data_bundle).st_size))
         end = time.time()
-        print ('handle_analytics_bundle time:', end-start, 's')
+        LOGGER.info('handle_analytics_bundle time:', end-start, 's')
         shutil.rmtree(temp_dir)
         return data_bundle
 
 
 def get_bundle_file(bundle_id):
     return os.path.join(BUNDLE_DIR, '{}_data_bundle.tar.gz'.format(bundle_id))
+
+
+PRODUCER = KafkaProducer(
+    bootstrap_servers=['{0}:{1}'.format(KAFKA_HOST, KAFKA_PORT)],
+    value_serializer=lambda m: json.dumps(m).encode('ascii')
+)
+
+def on_send_success(record_metadata):
+    LOGGER.info(record_metadata.topic)
+    LOGGER.info(record_metadata.partition)
+    LOGGER.info(record_metadata.offset)
+
+
+def on_send_error(excp):
+    LOGGER.error('I am an errback', exc_info=excp)
+    # handle exception
+
+
+def produce_upload_message(json_payload):
+    PRODUCER.send(KAFKA_TOPIC, json_payload).add_callback(on_send_success) \
+    .add_errback(on_send_error)
+    PRODUCER.flush()
+
+
+def notify_upload(url, account_id, tenanat_id, bundle_id):
+    bundle_file = get_bundle_file(bundle_id)
+    bundle_size = os.st(bundle_file).st_size
+    payload = {
+        'account': account_id,
+        'b64_identity': '__=',
+        'category': 'analytics',
+        'metadata': {},
+        'principal': tenanat_id,
+        'request_id': bundle_id,
+        'service': 'tower',
+        'size': bundle_size, 
+        'timestamp': '2020-01-30T18:04:29.364338988Z',
+        'url': '{}/bundles/{}'.format(url, bundle_id)
+    }
+    produce_upload_message(payload)
