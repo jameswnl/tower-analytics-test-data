@@ -172,14 +172,21 @@ def on_send_error(excp):
 
 
 def produce_upload_message(json_payload):
-    PRODUCER.send(KAFKA_TOPIC, json_payload).add_callback(on_send_success) \
-    .add_errback(on_send_error)
-    PRODUCER.flush()
+    LOGGER.info("to producer.send()")
+    future = PRODUCER.send(KAFKA_TOPIC, json_payload)
+    try:
+        record_metadata = future.get(timeout=10)
+        LOGGER.info("send future completed")
+        return record_metadata
+    except KafkaError:
+        # Decide what to do if produce request failed...
+        LOGGER.exception('Failed to send to kafka')
 
 
 def notify_upload(url, account_id, tenanat_id, bundle_id):
+    LOGGER.info("notify_upload")
     bundle_file = get_bundle_file(bundle_id)
-    bundle_size = os.st(bundle_file).st_size
+    bundle_size = os.stat(bundle_file).st_size
     payload = {
         'account': account_id,
         'b64_identity': '__=',
@@ -192,4 +199,4 @@ def notify_upload(url, account_id, tenanat_id, bundle_id):
         'timestamp': '2020-01-30T18:04:29.364338988Z',
         'url': '{}/bundles/{}'.format(url, bundle_id)
     }
-    produce_upload_message(payload)
+    return produce_upload_message(payload)

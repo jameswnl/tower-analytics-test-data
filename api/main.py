@@ -43,6 +43,6 @@ def get_bundle(bundle_id: str):
 
 @app.get("/process/{bundle_id}")
 def process_bundle(bundle_id: str, tenant_id: int, account_id: str = '1234567'):
-    notify_upload(HOST_URL, account_id, tenant_id, bundle_id)
-    return FileResponse(get_bundle_file(bundle_id), media_type="application/gzip")
+    out = notify_upload(HOST_URL, account_id, tenant_id, bundle_id)
+    return out
 
