@@ -1,7 +1,6 @@
 import datetime
 import io
 import json
-import logging
 import os
 import pkgutil
 import shutil
@@ -9,15 +8,14 @@ import tarfile
 import tempfile
 import time
 
+from fastapi.logger import logger
 from kafka import KafkaProducer
 from kafka.errors import KafkaError
-
 
 BUNDLE_DIR = os.environ.get('BUNDLE_DIR', '/BUNDLE_DIR')
 KAFKA_HOST = os.environ.get('KAFKA_HOST', 'kafka')
 KAFKA_PORT = os.environ.get('KAFKA_PORT', '9092')
 KAFKA_TOPIC = 'platform.upload.tower'
-LOGGER = logging.getLogger('tower-analytics-test-data.generate_data')
 FILES = ['config.json',
          'counts.json',
          'cred_type_counts.json',
@@ -134,10 +132,10 @@ class TestDataGenerator:
             BUNDLE_DIR,
             '{}_data_bundle.tar.gz'.format(bundle_config.uuid))
         self.build_tarfile(temp_dir, data_bundle)
-        LOGGER.info("bundle created: tempdir={}, bundle={}, size={}".format(
+        logger.info("bundle created: tempdir={}, bundle={}, size={}".format(
                     temp_dir, data_bundle, os.stat(data_bundle).st_size))
         end = time.time()
-        LOGGER.info('handle_analytics_bundle time:', end-start, 's')
+        logger.info('handle_analytics_bundle time:%f', end-start)
         shutil.rmtree(temp_dir)
         return data_bundle
 
@@ -146,37 +144,38 @@ def get_bundle_file(bundle_id):
     return os.path.join(BUNDLE_DIR, '{}_data_bundle.tar.gz'.format(bundle_id))
 
 
-PRODUCER = KafkaProducer(
-    bootstrap_servers=['{0}:{1}'.format(KAFKA_HOST, KAFKA_PORT)],
-    value_serializer=lambda m: json.dumps(m).encode('ascii')
-)
+try:
+    PRODUCER = KafkaProducer(
+        bootstrap_servers=['{0}:{1}'.format(KAFKA_HOST, KAFKA_PORT)],
+        value_serializer=lambda m: json.dumps(m).encode('ascii')
+    )
+except:
+    pass
 
 
 def on_send_success(record_metadata):
-    LOGGER.info(record_metadata.topic)
-    LOGGER.info(record_metadata.partition)
-    LOGGER.info(record_metadata.offset)
+    logger.info('kafka message produced: %s', record_metadata)
 
 
 def on_send_error(excp):
-    LOGGER.error('I am an errback', exc_info=excp)
+    logger.error('I am an errback', exc_info=excp)
     # handle exception
 
 
 def produce_upload_message(json_payload):
-    LOGGER.info("to producer.send()")
+    logger.info("to producer.send()")
     future = PRODUCER.send(KAFKA_TOPIC, json_payload)
     try:
         record_metadata = future.get(timeout=10)
-        LOGGER.info("send future completed")
+        logger.info("send future completed")
         return record_metadata
     except KafkaError:
         # Decide what to do if produce request failed...
-        LOGGER.exception('Failed to send to kafka')
+        logger.exception('Failed to send to kafka')
 
 
 def notify_upload(url, account_id, tenanat_id, bundle_id):
-    LOGGER.info("notify_upload")
+    logger.info("notify_upload")
     bundle_file = get_bundle_file(bundle_id)
     bundle_size = os.stat(bundle_file).st_size
     payload = {
