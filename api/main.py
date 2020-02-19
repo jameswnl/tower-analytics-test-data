@@ -1,6 +1,7 @@
 import logging
 import os
 import uuid
+from os import listdir
 from pathlib import Path
 
 from fastapi import FastAPI, HTTPException
@@ -24,6 +25,11 @@ class BundleConfig(BaseModel):
     account_id: str
 
 
+class BundleState(BaseModel):
+    uuid: str
+    processed: bool
+
+
 app = FastAPI()
 app.add_middleware(
     CORSMiddleware,
@@ -38,6 +44,20 @@ logger.setLevel(LOG_LEVEL)
 @app.get("/")
 async def root():
     return {"message": "Hello World"}
+
+
+@app.get("/bundles/")
+async def list_bundles():
+    """Listing bundles and status."""
+    all = [f for f in listdir(BUNDLE_DIR)]
+    done = [f[:32] for f in all if f.endswith('.done')]
+    tars = [f[:32] for f in all if f.endswith('.gz') and not f[:32] in done]
+    out = []
+    for uuid in tars:
+        out.append(BundleState(uuid=uuid, processed=False))
+    for uuid in done:
+        out.append(BundleState(uuid=uuid, processed=True))
+    return out
 
 
 @app.post("/bundles/")
