@@ -16,6 +16,7 @@ BUNDLE_DIR = os.environ.get('BUNDLE_DIR', '/BUNDLE_DIR')
 KAFKA_HOST = os.environ.get('KAFKA_HOST', 'kafka')
 KAFKA_PORT = os.environ.get('KAFKA_PORT', '9092')
 KAFKA_TOPIC = 'platform.upload.tower'
+KAFKA_PRODUCER = None
 FILES = ['config.json',
          'counts.json',
          'cred_type_counts.json',
@@ -32,7 +33,7 @@ FILES = ['config.json',
          'unified_jobs_table.csv']
 
 try:
-    PRODUCER = KafkaProducer(
+    KAFKA_PRODUCER = KafkaProducer(
         bootstrap_servers=['{0}:{1}'.format(KAFKA_HOST, KAFKA_PORT)],
         value_serializer=lambda m: json.dumps(m).encode('ascii')
     )
@@ -153,10 +154,10 @@ def get_bundle_file(bundle_id):
 
 
 def produce_upload_message(json_payload):
-    if not PRODUCER:
+    if not KAFKA_PRODUCER:
         raise Exception("Kafka not available")
     logger.debug("to producer.send()")
-    future = PRODUCER.send(KAFKA_TOPIC, json_payload)
+    future = KAFKA_PRODUCER.send(KAFKA_TOPIC, json_payload)
     try:
         record_metadata = future.get(timeout=10)
         logger.info("send future completed")
@@ -180,6 +181,6 @@ def notify_upload(url, account_id, tenanat_id, bundle_id):
         'service': 'tower',
         'size': bundle_size,
         'timestamp': '2020-01-30T18:04:29.364338988Z',
-        'url': '{}/bundles/{}'.format(url, bundle_id)
+        'url': '{}/bundles/{}?done=True'.format(url, bundle_id)
     }
     return produce_upload_message(payload)

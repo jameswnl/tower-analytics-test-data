@@ -1,6 +1,7 @@
 import logging
 import os
 import uuid
+from pathlib import Path
 
 from fastapi import FastAPI, HTTPException
 from fastapi.logger import logger
@@ -53,7 +54,7 @@ async def create_bundle(config: BundleConfig):
 
 
 @app.get("/bundles/{bundle_id}")
-def get_bundle(bundle_id: str):
+def get_bundle(bundle_id: str, done: bool=False):
     """Return a bundle."""
     data_bundle = get_bundle_file(bundle_id)
     if not os.path.isfile(data_bundle):
@@ -61,6 +62,10 @@ def get_bundle(bundle_id: str):
         raise HTTPException(
             status_code=404,
             detail="Bundle ID={} not found".format(bundle_id))
+    if done:
+        # mark it as done, to be deleted
+        bundle_done = '{}.done'.format(data_bundle)
+        Path(bundle_done).touch()
     return FileResponse(data_bundle, media_type="application/gzip")
 
 
