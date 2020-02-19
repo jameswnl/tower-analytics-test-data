@@ -31,6 +31,14 @@ FILES = ['config.json',
          'unified_job_template_table.csv',
          'unified_jobs_table.csv']
 
+try:
+    PRODUCER = KafkaProducer(
+        bootstrap_servers=['{0}:{1}'.format(KAFKA_HOST, KAFKA_PORT)],
+        value_serializer=lambda m: json.dumps(m).encode('ascii')
+    )
+except:
+    logger.exception('Failed to connect to: %s:%s', KAFKA_HOST, KAFKA_PORT)
+
 
 class TestDataGenerator:
     def _default_date_time(self, days_ago=0, seconds=0):
@@ -121,7 +129,7 @@ class TestDataGenerator:
 
         data['events_table.csv'] = output.getvalue().encode()
 
-    def handle(self, bundle_config):
+    def generate_bundle(self, bundle_config):
         start = time.time()
         temp_dir = tempfile.mkdtemp()
         data = self.read_sample_data()
@@ -144,38 +152,22 @@ def get_bundle_file(bundle_id):
     return os.path.join(BUNDLE_DIR, '{}_data_bundle.tar.gz'.format(bundle_id))
 
 
-try:
-    PRODUCER = KafkaProducer(
-        bootstrap_servers=['{0}:{1}'.format(KAFKA_HOST, KAFKA_PORT)],
-        value_serializer=lambda m: json.dumps(m).encode('ascii')
-    )
-except:
-    pass
-
-
-def on_send_success(record_metadata):
-    logger.info('kafka message produced: %s', record_metadata)
-
-
-def on_send_error(excp):
-    logger.error('I am an errback', exc_info=excp)
-    # handle exception
-
-
 def produce_upload_message(json_payload):
-    logger.info("to producer.send()")
+    if not PRODUCER:
+        raise Exception("Kafka not available")
+    logger.debug("to producer.send()")
     future = PRODUCER.send(KAFKA_TOPIC, json_payload)
     try:
         record_metadata = future.get(timeout=10)
         logger.info("send future completed")
         return record_metadata
     except KafkaError:
-        # Decide what to do if produce request failed...
         logger.exception('Failed to send to kafka')
+        raise
 
 
 def notify_upload(url, account_id, tenanat_id, bundle_id):
-    logger.info("notify_upload")
+    logger.debug("notify_upload")
     bundle_file = get_bundle_file(bundle_id)
     bundle_size = os.stat(bundle_file).st_size
     payload = {

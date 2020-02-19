@@ -19,6 +19,8 @@ class BundleConfig(BaseModel):
     unified_jobs: int
     job_events: int
     uuid: str = ''
+    tenant_id: int
+    account_id: str
 
 
 app = FastAPI()
@@ -40,10 +42,13 @@ async def root():
 @app.post("/bundles/")
 async def create_bundle(config: BundleConfig):
     """Create a bundle and return an ID for later reference."""
-    generator = TestDataGenerator()
-    id = str(uuid.uuid4()).replace('-', '')
-    config = BundleConfig(unified_jobs=4, job_events=4, uuid=id)
-    generator.handle(config)
+    config.uuid = str(uuid.uuid4()).replace('-', '')
+    bundle_file = TestDataGenerator().generate_bundle(config)
+    notify_upload(
+        HOST_URL,
+        config.account_id,
+        config.tenant_id,
+        config.uuid)
     return config
 
 
@@ -62,5 +67,5 @@ def get_bundle(bundle_id: str):
 @app.get("/process/{bundle_id}")
 def process_bundle(bundle_id: str, tenant_id: int, account_id: str = '123456'):
     """Push bundle to processor."""
-    out = notify_upload(HOST_URL, account_id, tenant_id, bundle_id)
-    return out
+    return notify_upload(HOST_URL, account_id, tenant_id, bundle_id)
+
