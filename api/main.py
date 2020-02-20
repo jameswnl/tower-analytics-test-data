@@ -4,13 +4,13 @@ import uuid
 from os import listdir
 from pathlib import Path
 
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, BackgroundTasks
 from fastapi.logger import logger
 from pydantic import BaseModel
 from starlette.middleware.cors import CORSMiddleware
 from starlette.responses import FileResponse
 
-from .core.generate_data import (TestDataGenerator, get_bundle_file,
+from .core.generate_data import (TestDataGenerator, get_bundle_path,
                                  notify_upload)
 
 BUNDLE_DIR = os.environ.get('BUNDLE_DIR', '/BUNDLE_DIR')
@@ -46,17 +46,31 @@ async def root():
     return {"message": "Hello World"}
 
 
+def remove_processed_bundles(to_del):
+    logger.info('Removing processed %d bundles', len(to_del))
+    for uuid in to_del:
+        f = get_bundle_path(uuid)
+        logger.info('Removing %s', f)
+        os.remove(f)
+
+
 @app.get("/bundles/")
-async def list_bundles():
+async def list_bundles(background_tasks: BackgroundTasks):
     """Listing bundles and status."""
     all = [f for f in listdir(BUNDLE_DIR)]
+    # Processed bundles has a corresponing '.done' file
     done = [f[:32] for f in all if f.endswith('.done')]
+    # Bundles that is not yet processed
     tars = [f[:32] for f in all if f.endswith('.gz') and not f[:32] in done]
+    # Bundles that are processed and so can be purged
+    purge = [f[:32] for f in all if f.endswith('.gz') and f[:32] in done]
     out = []
     for uuid in tars:
         out.append(BundleState(uuid=uuid, processed=False))
     for uuid in done:
         out.append(BundleState(uuid=uuid, processed=True))
+    if purge:
+        background_tasks.add_task(remove_processed_bundles, purge)
     return out
 
 
@@ -76,7 +90,7 @@ async def create_bundle(config: BundleConfig):
 @app.get("/bundles/{bundle_id}")
 def get_bundle(bundle_id: str, done: bool=False):
     """Return a bundle."""
-    data_bundle = get_bundle_file(bundle_id)
+    data_bundle = get_bundle_path(bundle_id)
     if not os.path.isfile(data_bundle):
         logger.error("Bundle {} not found".format(data_bundle))
         raise HTTPException(

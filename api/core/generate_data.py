@@ -149,7 +149,7 @@ class TestDataGenerator:
         return data_bundle
 
 
-def get_bundle_file(bundle_id):
+def get_bundle_path(bundle_id):
     return os.path.join(BUNDLE_DIR, '{}_data_bundle.tar.gz'.format(bundle_id))
 
 
@@ -169,7 +169,7 @@ def produce_upload_message(json_payload):
 
 def notify_upload(url, account_id, tenanat_id, bundle_id):
     logger.debug("notify_upload")
-    bundle_file = get_bundle_file(bundle_id)
+    bundle_file = get_bundle_path(bundle_id)
     bundle_size = os.stat(bundle_file).st_size
     payload = {
         'account': account_id,
