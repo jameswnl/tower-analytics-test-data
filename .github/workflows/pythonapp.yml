@@ -9,13 +9,15 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
-    - name: Set up Python 3.8
+    - name: Set up Python 3.6
       uses: actions/setup-python@v1
       with:
-        python-version: 3.8
+        python-version: 3.6
     - uses: dschep/install-pipenv-action@v1
     - name: Install dependencies
       run: pipenv install --dev
+    - name: pytest
+      run: BUNDLE_DIR=./BUNDLE_DIR pipenv run pytest
     - name: Lint with flake8
       run: |
         pip install flake8
