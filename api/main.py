@@ -20,7 +20,14 @@ LOG_LEVEL = int(os.environ.get('LOG_LEVEL', logging.INFO))
 class BundleConfig(BaseModel):
     unified_jobs: int
     job_events: int
-    uuid: str = ''
+    tasks_count: int
+    orgs_count: int
+    templates_count: int
+    spread_days_back: int
+    starting_day: int
+    hosts_count: int
+    failed_job_modulo: int
+    uuid: str
     tenant_id: int
     account_id: str
 
