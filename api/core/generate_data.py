@@ -66,12 +66,12 @@ class TestDataGenerator:
 
     def _failed_job(self, i):
         # half of jobs will be failed
-        if i % 200 >= 100:
+        if i % self.failed_job_modulo >= 100:
             return 'failed'
         else:
             return 'successful'
 
-    def generate_unified_jobs(self, data, n, orgs_count, templates_count, spread_days_back, starting_day):
+    def generate_unified_jobs(self, data, jobs_count, orgs_count, templates_count, spread_days_back, starting_day):
         """
         Appends to the unified jobs table with a CSV data
 
@@ -80,7 +80,7 @@ class TestDataGenerator:
         """
         output = io.StringIO()
         output.write(data['unified_jobs_table.csv'].decode())
-        for job_id in range(n):
+        for job_id in range(jobs_count):
             output.write('{job_id},37,job,1,organization_{org_id},{created},template_name_{template_id},471,'
                          'scheduled,19,localhost,"",f,{failed},f,{started},{finished},5.873,"",1\n'.format(
                              created=self._default_date_time((job_id % spread_days_back) + starting_day),
