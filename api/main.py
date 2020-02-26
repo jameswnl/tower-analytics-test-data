@@ -82,15 +82,18 @@ async def list_bundles(background_tasks: BackgroundTasks):
 
 
 @app.post("/bundles/")
-async def create_bundle(config: BundleConfig):
+async def create_bundle(config: BundleConfig, process: bool=True):
     """Create a bundle and return an ID for later reference."""
     config.uuid = str(uuid.uuid4()).replace('-', '')
     bundle_file = TestDataGenerator().generate_bundle(config)
-    notify_upload(
-        HOST_URL,
-        config.account_id,
-        config.tenant_id,
-        config.uuid)
+    if process:
+        notify_upload(
+            HOST_URL,
+            config.account_id,
+            config.tenant_id,
+            config.uuid)
+    else:
+        logger.info("Process=False, not sending message")
     return config
 
 
