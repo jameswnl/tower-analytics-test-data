@@ -4,6 +4,7 @@ import uuid
 from os import listdir
 from pathlib import Path
 
+from datasette_auth_github import GitHubAuth
 from fastapi import FastAPI, HTTPException, BackgroundTasks
 from fastapi.logger import logger
 from pydantic import BaseModel
@@ -16,6 +17,8 @@ from .core.generate_data import (TestDataGenerator, get_bundle_path,
 BUNDLE_DIR = os.environ.get('BUNDLE_DIR', '/BUNDLE_DIR')
 HOST_URL = os.environ.get('HOST_URL', 'http://testbuild:8000')
 LOG_LEVEL = int(os.environ.get('LOG_LEVEL', logging.INFO))
+GH_AUTH_CLIENT_ID = os.getenv('GH_AUTH_CLIENT_ID')
+GH_AUTH_CLIENT_SECRET = os.getenv('GH_AUTH_CLIENT_SECRET')
 
 class BundleConfig(BaseModel):
     unified_jobs: int
@@ -43,6 +46,12 @@ app.add_middleware(
     allow_origins=["*"],
     allow_methods=["*"],
     allow_headers=["*"]
+)
+app.add_middleware(
+    GitHubAuth,
+    client_id=GH_AUTH_CLIENT_ID,
+    client_secret=GH_AUTH_CLIENT_SECRET,
+    require_auth=True,
 )
 logger.handlers = logging.getLogger('uvicorn.error').handlers
 logger.setLevel(LOG_LEVEL)
