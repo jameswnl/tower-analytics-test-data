@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "ace69538650ac9714ef875408a27030908c303c4040c9e439873afa935cf0fad"
+            "sha256": "7f703b016bfcb514122645ed058cb63a13d142ca21f05c578ca1a796f6eba087"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -87,11 +87,9 @@
             "version": "==0.37"
         },
         "datasette-auth-github": {
-            "hashes": [
-                "sha256:35f0dfb431bd529675c363712520bbcd3f5af749f7f659ff543c49dc6d74e135"
-            ],
-            "index": "pypi",
-            "version": "==0.11"
+            "editable": true,
+            "git": "https://github.com/jameswnl/datasette-auth-github.git",
+            "ref": "fb4d055551c4ff53f0859edcb26cddfd60c958ed"
         },
         "dnspython": {
             "hashes": [

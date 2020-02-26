@@ -19,6 +19,7 @@ HOST_URL = os.environ.get('HOST_URL', 'http://testbuild:8000')
 LOG_LEVEL = int(os.environ.get('LOG_LEVEL', logging.INFO))
 GH_AUTH_CLIENT_ID = os.getenv('GH_AUTH_CLIENT_ID')
 GH_AUTH_CLIENT_SECRET = os.getenv('GH_AUTH_CLIENT_SECRET')
+ALLOW_GH_ORGS = (os.getenv('ALLOW_GH_ORGS') or 'Ansible').split(',')
 
 class BundleConfig(BaseModel):
     unified_jobs: int
@@ -52,6 +53,8 @@ app.add_middleware(
     client_id=GH_AUTH_CLIENT_ID,
     client_secret=GH_AUTH_CLIENT_SECRET,
     require_auth=True,
+    ignore_paths=[('GET', '/bundles/?*')],
+    allow_orgs=ALLOW_GH_ORGS,
 )
 logger.handlers = logging.getLogger('uvicorn.error').handlers
 logger.setLevel(LOG_LEVEL)

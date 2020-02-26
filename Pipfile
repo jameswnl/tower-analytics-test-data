@@ -13,8 +13,8 @@ fastapi = {extras = ["all"],version = "*"}
 uvicorn = "*"
 gunicorn = "*"
 kafka-python = "*"
-datasette-auth-github = "*"
 datasette = "*"
+datasette-auth-github = {editable = true,git = "https://github.com/jameswnl/datasette-auth-github.git",ref = "ignore-paths"}
 
 [requires]
 python_version = "3.6"
