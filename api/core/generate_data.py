@@ -187,7 +187,7 @@ def produce_upload_message(json_payload):
         raise
 
 
-def notify_upload(url, account_id, tenanat_id, bundle_id):
+def notify_upload(url, account_id, tenant_id, bundle_id):
     logger.debug("notify_upload")
     bundle_file = get_bundle_path(bundle_id)
     bundle_size = os.stat(bundle_file).st_size
@@ -196,11 +196,11 @@ def notify_upload(url, account_id, tenanat_id, bundle_id):
         'b64_identity': '__=',
         'category': 'analytics',
         'metadata': {},
-        'principal': tenanat_id,
+        'principal': tenant_id,
         'request_id': bundle_id,
         'service': 'tower',
         'size': bundle_size,
-        'timestamp': '2020-01-30T18:04:29.364338988Z',
+        'timestamp': datetime.now().astimezone().isoformat(),
         'url': '{}/bundles/{}?done=True'.format(url, bundle_id)
     }
     return produce_upload_message(payload)

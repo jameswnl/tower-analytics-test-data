@@ -4,9 +4,10 @@ from pathlib import Path
 import pytest
 from fastapi import HTTPException
 
+import api.main
 from api.main import (
-    app, bundles_by_state, list_bundles, BundleState,
-    delete_bundles,
+    app, bundles_by_state, list_bundles, BundleConfig, BundleState,
+    delete_bundles, create_bundle,
 )
 from api.core.generate_data import get_bundle_path
 from starlette.testclient import TestClient
@@ -15,7 +16,7 @@ from starlette.testclient import TestClient
 client = TestClient(app)
 
 @pytest.fixture()
-def create_bundle():
+def create_bundle_fix():
     f = get_bundle_path('foo')
     Path(f).touch()
     yield
@@ -29,13 +30,13 @@ def test_get_bundle_not_exist():
     assert response.status_code == 404
 
 
-def test_get_bundle(create_bundle):
+def test_get_bundle(create_bundle_fix):
     response = client.get("/bundles/foo?done=False")
     assert response.status_code == 200
     assert not os.path.exists(get_bundle_path('foo')+'.done')
 
 
-def test_get_bundle_done(create_bundle):
+def test_get_bundle_done(create_bundle_fix):
     response = client.get("/bundles/foo?done=True")
     assert response.status_code == 200
     assert os.path.exists(get_bundle_path('foo')+'.done')
@@ -74,6 +75,48 @@ def test_list_bundles(mocker):
         BundleState(uuid=UUIDs[2], processed=False),
     ].sort(key=lambda x: x.uuid)
     assert out == expected
+
+
+def test_create_bundle_and_process(mocker):
+    notify_upload = mocker.patch('api.main.notify_upload')
+    mocker.patch('api.main.TestDataGenerator')
+    create_bundle(BundleConfig(
+        unified_jobs=0,
+        job_events=0,
+        tasks_count=0,
+        orgs_count=0,
+        templates_count=0,
+        spread_days_back=0,
+        starting_day=0,
+        hosts_count=0,
+        failed_job_modulo=0,
+        uuid='',
+        tenant_id=1,
+        account_id='',
+    ))
+    notify_upload.assert_called_once()
+
+
+def test_create_bundle_no_processing(mocker):
+    notify_upload = mocker.patch('api.main.notify_upload')
+    mocker.patch('api.main.TestDataGenerator')
+    create_bundle(BundleConfig(
+            unified_jobs=0,
+            job_events=0,
+            tasks_count=0,
+            orgs_count=0,
+            templates_count=0,
+            spread_days_back=0,
+            starting_day=0,
+            hosts_count=0,
+            failed_job_modulo=0,
+            uuid='',
+            tenant_id=1,
+            account_id='',
+        ),
+        process=False
+    )
+    notify_upload.assert_not_called()
 
 
 def test_delete_processed_bundles(mocker):

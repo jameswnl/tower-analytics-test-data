@@ -96,10 +96,10 @@ def list_bundles():
 
 
 @app.post("/bundles/")
-async def create_bundle(config: BundleConfig, process: bool=True):
+def create_bundle(config: BundleConfig, process: bool=True):
     """Create a bundle and return an ID for later reference."""
     config.uuid = str(uuid.uuid4()).replace('-', '')
-    bundle_file = TestDataGenerator().generate_bundle(config)
+    TestDataGenerator().generate_bundle(config)
     if process:
         notify_upload(
             HOST_URL,
