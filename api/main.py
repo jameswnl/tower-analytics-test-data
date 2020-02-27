@@ -112,11 +112,11 @@ async def create_bundle(config: BundleConfig, process: bool=True):
 
 
 @app.delete("/bundles/{bundle_id}")
-def delete_bundles(background_tasks: BackgroundTasks, bundle_id: str='done'):
+def delete_bundles(background_tasks: BackgroundTasks, bundle_id: str='processed'):
     """Delete bundle file(s)."""
     logger.info("Deleting bundle: %s", bundle_id)
     purge = [bundle_id]
-    if bundle_id == 'done':
+    if bundle_id == 'processed':
         _, _, purge = bundles_by_state()
     else:
         data_bundle = get_bundle_path(bundle_id)
@@ -126,6 +126,7 @@ def delete_bundles(background_tasks: BackgroundTasks, bundle_id: str='done'):
                 status_code=404,
                 detail="Bundle ID={} not found".format(bundle_id))
     background_tasks.add_task(remove_processed_bundles, purge)
+    return "Deleting {} bundles: {}".format(len(purge), purge)
 
 
 @app.get("/bundles/{bundle_id}")
