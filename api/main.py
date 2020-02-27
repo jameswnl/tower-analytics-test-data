@@ -72,10 +72,7 @@ def remove_processed_bundles(to_del):
         logger.info('Removing %s', f)
         os.remove(f)
 
-
-@app.get("/bundles/")
-async def list_bundles(background_tasks: BackgroundTasks):
-    """Listing bundles and status."""
+def bundles_by_state():
     all = [f for f in listdir(BUNDLE_DIR)]
     # Processed bundles has a corresponing '.done' file
     done = [f[:32] for f in all if f.endswith('.done')]
@@ -83,13 +80,18 @@ async def list_bundles(background_tasks: BackgroundTasks):
     tars = [f[:32] for f in all if f.endswith('.gz') and not f[:32] in done]
     # Bundles that are processed and so can be purged
     purge = [f[:32] for f in all if f.endswith('.gz') and f[:32] in done]
+    return tars, done, purge
+
+
+@app.get("/bundles/")
+def list_bundles():
+    """Listing bundles and status."""
+    tars, done, _ = bundles_by_state()
     out = []
     for uuid in tars:
         out.append(BundleState(uuid=uuid, processed=False))
     for uuid in done:
         out.append(BundleState(uuid=uuid, processed=True))
-    if purge:
-        background_tasks.add_task(remove_processed_bundles, purge)
     return out
 
 
@@ -107,6 +109,23 @@ async def create_bundle(config: BundleConfig, process: bool=True):
     else:
         logger.info("Process=False, not sending message")
     return config
+
+
+@app.delete("/bundles/{bundle_id}")
+def delete_bundles(background_tasks: BackgroundTasks, bundle_id: str='done'):
+    """Delete bundle file(s)."""
+    logger.info("Deleting bundle: %s", bundle_id)
+    purge = [bundle_id]
+    if bundle_id == 'done':
+        _, _, purge = bundles_by_state()
+    else:
+        data_bundle = get_bundle_path(bundle_id)
+        if not os.path.isfile(data_bundle):
+            logger.error("Bundle {} not found".format(data_bundle))
+            raise HTTPException(
+                status_code=404,
+                detail="Bundle ID={} not found".format(bundle_id))
+    background_tasks.add_task(remove_processed_bundles, purge)
 
 
 @app.get("/bundles/{bundle_id}")
