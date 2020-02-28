@@ -1,4 +1,7 @@
+import json
 import os
+import tarfile
+import tempfile
 from pathlib import Path
 
 import pytest
@@ -89,6 +92,26 @@ def test_create_bundle_no_processing(mocker):
     mocker.patch('api.main.TestDataGenerator')
     create_bundle(BundleConfig(), process=False)
     notify_upload.assert_not_called()
+
+
+def test_create_bundle(mocker):
+    bundle_config = BundleConfig(
+        install_uuid = 'install_1234',
+        tower_url_base = 'base_url_is_this',
+        instance_uuid = 'instance_12345',
+    )
+    config = create_bundle(bundle_config, process=False)
+    temp_dir = tempfile.mkdtemp()
+    bundle_file = get_bundle_path(config.bundle_uuid)
+    tar = tarfile.open(bundle_file)
+    tar.extractall(path=temp_dir)
+    tar.close()
+    with open(os.path.join(temp_dir, 'config.json')) as f:
+        config_json_data = json.loads(f.read())
+        assert config_json_data['install_uuid'] == 'install_1234'
+        assert config_json_data['tower_url_base'] == 'base_url_is_this'
+        assert config_json_data['instance_uuid'] == 'instance_12345'
+    os.remove(bundle_file)
 
 
 def test_delete_processed_bundles(mocker):

@@ -211,7 +211,7 @@ def notify_upload(url, account_id, tenant_id, bundle_id):
         'request_id': bundle_id,
         'service': 'tower',
         'size': bundle_size,
-        'timestamp': datetime.now().astimezone().isoformat(),
+        'timestamp': datetime.datetime.now().astimezone().isoformat(),
         'url': '{}/bundles/{}?done=True'.format(url, bundle_id)
     }
     return produce_upload_message(payload)
