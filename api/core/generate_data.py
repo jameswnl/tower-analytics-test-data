@@ -137,6 +137,16 @@ class TestDataGenerator:
 
         data['events_table.csv'] = output.getvalue().encode()
 
+    def patch_config_json(self, bundle_config, data):
+        config_json = json.loads(data['config.json'].decode())
+        if bundle_config.install_uuid:
+            config_json['install_uuid'] = bundle_config.install_uuid
+        if bundle_config.instance_uuid:
+            config_json['instance_uuid'] = bundle_config.instance_uuid
+        if bundle_config.tower_url_base:
+            config_json['tower_url_base'] = bundle_config.tower_url_base
+        data['config.json'] = json.dumps(config_json).encode()
+
     def generate_bundle(self, bundle_config):
         start = time.time()
         tasks_count = bundle_config.tasks_count or 100
@@ -149,6 +159,7 @@ class TestDataGenerator:
 
         temp_dir = tempfile.mkdtemp()
         data = self.read_sample_data()
+        self.patch_config_json(bundle_config, data)
         self.generate_unified_jobs(data, bundle_config.unified_jobs,
                                    orgs_count, templates_count,
                                    spread_days_back, starting_day)
