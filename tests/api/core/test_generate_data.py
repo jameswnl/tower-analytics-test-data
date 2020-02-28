@@ -11,8 +11,9 @@ def test_notify_upload(mocker):
     tenant_id = 1
     bundle_id = '1' * 32
     produce_upload_message = mocker.patch('api.core.generate_data.produce_upload_message')
-    datetime_mock = mocker.patch('api.core.generate_data.datetime')
-    datetime_mock.now.return_value = datetime.fromtimestamp(1582845336)
+    time_now = datetime.fromtimestamp(1582845336)
+    datetime_mock = mocker.patch('api.core.generate_data.datetime.datetime')
+    datetime_mock.now.return_value = time_now
     os_stat = mocker.patch('api.core.generate_data.os.stat')
     os_stat.return_value = mocker.MagicMock()
     os_stat.return_value.st_size = 1000
@@ -27,7 +28,7 @@ def test_notify_upload(mocker):
         'request_id': bundle_id,
         'service': 'tower',
         'size': 1000,
-        'timestamp': datetime_mock.now.return_value.astimezone().isoformat(),
+        'timestamp': time_now.astimezone().isoformat(),
         'url': '{}/bundles/{}?done=True'.format(url, bundle_id)
     }
     produce_upload_message.assert_called_once_with(payload)
