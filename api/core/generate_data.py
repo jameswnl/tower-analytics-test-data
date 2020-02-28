@@ -159,7 +159,7 @@ class TestDataGenerator:
         self.write_data(temp_dir, data)
         data_bundle = os.path.join(
             BUNDLE_DIR,
-            '{}_data_bundle.tar.gz'.format(bundle_config.uuid))
+            '{}_data_bundle.tar.gz'.format(bundle_config.bundle_uuid))
         self.build_tarfile(temp_dir, data_bundle)
         logger.info("bundle created: tempdir={}, bundle={}, size={}".format(
                     temp_dir, data_bundle, os.stat(data_bundle).st_size))

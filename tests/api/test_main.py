@@ -80,42 +80,14 @@ def test_list_bundles(mocker):
 def test_create_bundle_and_process(mocker):
     notify_upload = mocker.patch('api.main.notify_upload')
     mocker.patch('api.main.TestDataGenerator')
-    create_bundle(BundleConfig(
-        unified_jobs=0,
-        job_events=0,
-        tasks_count=0,
-        orgs_count=0,
-        templates_count=0,
-        spread_days_back=0,
-        starting_day=0,
-        hosts_count=0,
-        failed_job_modulo=0,
-        uuid='',
-        tenant_id=1,
-        account_id='',
-    ))
+    create_bundle(BundleConfig())
     notify_upload.assert_called_once()
 
 
 def test_create_bundle_no_processing(mocker):
     notify_upload = mocker.patch('api.main.notify_upload')
     mocker.patch('api.main.TestDataGenerator')
-    create_bundle(BundleConfig(
-            unified_jobs=0,
-            job_events=0,
-            tasks_count=0,
-            orgs_count=0,
-            templates_count=0,
-            spread_days_back=0,
-            starting_day=0,
-            hosts_count=0,
-            failed_job_modulo=0,
-            uuid='',
-            tenant_id=1,
-            account_id='',
-        ),
-        process=False
-    )
+    create_bundle(BundleConfig(), process=False)
     notify_upload.assert_not_called()
 
 

@@ -22,18 +22,21 @@ GH_AUTH_CLIENT_SECRET = os.getenv('GH_AUTH_CLIENT_SECRET')
 ALLOW_GH_ORGS = (os.getenv('ALLOW_GH_ORGS') or 'Ansible').split(',')
 
 class BundleConfig(BaseModel):
-    unified_jobs: int
-    job_events: int
-    tasks_count: int
-    orgs_count: int
-    templates_count: int
-    spread_days_back: int
-    starting_day: int
-    hosts_count: int
-    failed_job_modulo: int
-    uuid: str
-    tenant_id: int
-    account_id: str
+    unified_jobs: int = 1
+    job_events: int = 1
+    tasks_count: int = 100
+    orgs_count: int = 1
+    templates_count: int = 1
+    spread_days_back: int = 100
+    starting_day: int = 1
+    hosts_count: int = 1
+    failed_job_modulo: int = 1
+    bundle_uuid: str = ''
+    tenant_id: int = 1
+    account_id: str = '1'
+    install_uuid: str = ''
+    instance_uuid: str = ''
+    tower_url_base: str = ''
 
 
 class BundleState(BaseModel):
@@ -98,14 +101,14 @@ def list_bundles():
 @app.post("/bundles/")
 def create_bundle(config: BundleConfig, process: bool=True):
     """Create a bundle and return an ID for later reference."""
-    config.uuid = str(uuid.uuid4()).replace('-', '')
+    config.bundle_uuid = str(uuid.uuid4()).replace('-', '')
     TestDataGenerator().generate_bundle(config)
     if process:
         notify_upload(
             HOST_URL,
             config.account_id,
             config.tenant_id,
-            config.uuid)
+            config.bundle_uuid)
     else:
         logger.info("Process=False, not sending message")
     return config
