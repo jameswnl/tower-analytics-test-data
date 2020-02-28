@@ -7,6 +7,7 @@ verify_ssl = true
 pytest = "*"
 mypy = "*"
 pylama = "*"
+pytest-mock = "*"
 
 [packages]
 fastapi = {extras = ["all"],version = "*"}
