@@ -17,7 +17,7 @@ jobs:
     - name: Install dependencies
       run: pipenv install --dev
     - name: pytest
-      run: BUNDLE_DIR=./BUNDLE_DIR pipenv run pytest
+      run: BUNDLE_DIR=`pwd`/BUNDLE_DIR pipenv run pytest
     - name: Lint with flake8
       run: |
         pip install flake8
