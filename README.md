@@ -12,6 +12,7 @@ API to generate test data for Automation Analytics
   BUNDLE_DIR  # Default: /BUNDLE_DIR'
   
   # host url this service is exposed. The service in K8s pod
+  # This will be where client(processor) can download the bundles
   HOST_URL
 ```
 
