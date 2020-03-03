@@ -48,3 +48,9 @@ To guard the API service using GitHub OAuth app
 open http://localhost:8000/docs
 
 
+## Docker image
+
+* Build the docker image using the `Dockerfile`
+* Set the env for the deployment config
+
+
