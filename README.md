@@ -4,23 +4,42 @@
 
 API to generate test data for Automation Analytics
 
+# Set up
 
-## Env variables
+### Install
+```
+  git clone git@github.com:jameswnl/tower-analytics-test-data.git
+  cd tower-analytics-test-data.git
+  pipenv install
+```
 
+### Set Env variables
 ```
   # path to folder to store created bundles
   BUNDLE_DIR  # Default: /BUNDLE_DIR'
   
   # host url this service is exposed. The service in K8s pod
-  # This will be where client(processor) can download the bundles
+  # This will be set in the kafka message which processor will find out where to download the bundles from
   HOST_URL
 ```
 
-### Authentication
+###  Authentication
 To guard the API service using GitHub OAuth app https://github.com/settings/applications
-
+(The download bundle endpoint is not blocked by authentication)
 ```
    GH_AUTH_CLIENT_ID  # Github OAuth App client ID
    GH_AUTH_CLIENT_SECRET  # Github OAuth App client Secret
    ALLOW_GH_ORGS  # Allowed Github organizations. Default: Ansible
 ```
+
+### Fire it up
+```
+  pipenv shell
+  uvicorn api.main:app --port 8000
+```
+
+### Check it out
+
+open http://localhost:8000/docs
+
+
