@@ -35,7 +35,7 @@ To guard the API service using GitHub OAuth app https://github.com/settings/appl
 ### Fire it up
 ```
   pipenv shell
-  uvicorn api.main:app --port 8000
+  uvicorn api.main:app
 ```
 
 ### Check it out
