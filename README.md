@@ -4,6 +4,8 @@
 
 API to generate test data for Automation Analytics
 
+## Local setup
+
 ### Install
 ```
   git clone git@github.com:jameswnl/tower-analytics-test-data.git
@@ -22,8 +24,13 @@ API to generate test data for Automation Analytics
 ```
 
 ###  Authentication
-To guard the API service using GitHub OAuth app https://github.com/settings/applications
+To guard the API service using GitHub OAuth app
+
 (The download bundle endpoint is not blocked by authentication)
+
+* Create a GitHub OAuth app: https://github.com/settings/applications/new
+* Set the Authorization callback URL to `http://localhost:8000/-/auth-callback`
+
 ```
    GH_AUTH_CLIENT_ID  # Github OAuth App client ID
    GH_AUTH_CLIENT_SECRET  # Github OAuth App client Secret
