@@ -4,8 +4,6 @@
 
 API to generate test data for Automation Analytics
 
-# Set up
-
 ### Install
 ```
   git clone git@github.com:jameswnl/tower-analytics-test-data.git
