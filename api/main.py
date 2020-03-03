@@ -13,10 +13,11 @@ from starlette.responses import FileResponse
 
 from .core.generate_data import (TestDataGenerator, get_bundle_path,
                                  notify_upload)
+logger.handlers = logging.getLogger('uvicorn.error').handlers
+logger.setLevel(int(os.environ.get('LOG_LEVEL', logging.INFO)))
 
 BUNDLE_DIR = os.environ.get('BUNDLE_DIR', '/BUNDLE_DIR')
 HOST_URL = os.environ.get('HOST_URL', 'http://testbuild:8000')
-LOG_LEVEL = int(os.environ.get('LOG_LEVEL', logging.INFO))
 GH_AUTH_CLIENT_ID = os.getenv('GH_AUTH_CLIENT_ID')
 GH_AUTH_CLIENT_SECRET = os.getenv('GH_AUTH_CLIENT_SECRET')
 ALLOW_GH_ORGS = (os.getenv('ALLOW_GH_ORGS') or 'Ansible').split(',')
@@ -51,16 +52,20 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"]
 )
-app.add_middleware(
-    GitHubAuth,
-    client_id=GH_AUTH_CLIENT_ID,
-    client_secret=GH_AUTH_CLIENT_SECRET,
-    require_auth=True,
-    ignore_paths=[('GET', '/bundles/?*')],
-    allow_orgs=ALLOW_GH_ORGS,
-)
-logger.handlers = logging.getLogger('uvicorn.error').handlers
-logger.setLevel(LOG_LEVEL)
+
+
+if GH_AUTH_CLIENT_ID and GH_AUTH_CLIENT_SECRET:
+    app.add_middleware(
+        GitHubAuth,
+        client_id=GH_AUTH_CLIENT_ID,
+        client_secret=GH_AUTH_CLIENT_SECRET,
+        require_auth=True,
+        ignore_paths=[('GET', '/bundles/?*')],
+        allow_orgs=ALLOW_GH_ORGS,
+    )
+    logger.info('Github Authentication enabled')
+else:
+    logger.warning('GH_AUTH_CLIENT_ID and GH_AUTH_CLIENT_SECRET not set, no authentication is enabled')
 
 
 @app.get("/")

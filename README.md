@@ -16,13 +16,10 @@ API to generate test data for Automation Analytics
 ```
 
 ### Authentication
-Using GitHub OAuth app https://github.com/settings/applications
+To guard the API service using GitHub OAuth app https://github.com/settings/applications
 
 ```
    GH_AUTH_CLIENT_ID  # Github OAuth App client ID
    GH_AUTH_CLIENT_SECRET  # Github OAuth App client Secret
-   ALLOW_GH_ORGS  # Allowed Github organizations
-
-   DISABLE_GH_AUTH=1  # Set to any non-empty string to disable authentication
+   ALLOW_GH_ORGS  # Allowed Github organizations. Default: Ansible
 ```
-
