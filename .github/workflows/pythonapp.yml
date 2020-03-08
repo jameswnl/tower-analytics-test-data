@@ -1,6 +1,6 @@
 name: Python application
 
-on: [push]
+on: [pull_request]
 
 jobs:
   build:
@@ -17,12 +17,22 @@ jobs:
     - name: Install dependencies
       run: pipenv install --dev
     - name: pytest
-      run: BUNDLE_DIR=`pwd`/BUNDLE_DIR pipenv run pytest
-    - name: Lint with flake8
-      run: |
-        pip install flake8
-        # stop the build if there are Python syntax errors or undefined names
-        flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
-        # exit-zero treats all errors as warnings. The GitHub editor is 127 chars wide
-        flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
-
+      run: BUNDLE_DIR=`pwd`/BUNDLE_DIR pipenv run coverage run --source=. -m pytest
+    - name: coverage report
+      run: pipenv run coverage xml
+    - uses: codecov/codecov-action@v1
+      with:
+        # token: ${{ secrets.CODECOV_TOKEN }} # not required for public repos
+        file: ./coverage.xml # optional
+        flags: unittests # optional
+        name: codecov-umbrella # optional
+        fail_ci_if_error: true # optional (default = false)
+    - name: lintly-flake8
+      uses: grantmcconnaughey/lintly-flake8-github-action@v1.0
+      with:
+        # The GitHub API token to create reviews with
+        token: ${{ secrets.GITHUB_TOKEN }}
+        # Fail if "new" violations detected or "any", default "new"
+        failIf: new
+        # Additional arguments to pass to flake8, default "." (current directory)
+        args: "--ignore=E121,E123 ."

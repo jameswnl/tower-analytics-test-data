@@ -8,6 +8,7 @@ pytest = "*"
 mypy = "*"
 pylama = "*"
 pytest-mock = "*"
+pytest-cov = "*"
 
 [packages]
 fastapi = {extras = ["all"],version = "*"}
@@ -16,6 +17,7 @@ gunicorn = "*"
 kafka-python = "*"
 datasette = "*"
 datasette-auth-github = {editable = true,git = "https://github.com/jameswnl/datasette-auth-github.git",ref = "ignore-paths"}
+coverage = "*"
 
 [requires]
 python_version = "3.6"
