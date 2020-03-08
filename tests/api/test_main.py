@@ -7,7 +7,6 @@ from pathlib import Path
 import pytest
 from fastapi import HTTPException
 
-import api.main
 from api.main import (
     app, bundles_by_state, list_bundles, BundleConfig, BundleState,
     delete_bundles, create_bundle,
@@ -18,14 +17,15 @@ from starlette.testclient import TestClient
 
 client = TestClient(app)
 
+
 @pytest.fixture()
 def create_bundle_fix():
     f = get_bundle_path('foo')
     Path(f).touch()
     yield
     os.remove(f)
-    if os.path.exists(f+'.done'):
-        os.remove(f+'.done')
+    if os.path.exists(f + '.done'):
+        os.remove(f + '.done')
 
 
 def test_get_bundle_not_exist():
@@ -36,13 +36,13 @@ def test_get_bundle_not_exist():
 def test_get_bundle(create_bundle_fix):
     response = client.get("/bundles/foo?done=False")
     assert response.status_code == 200
-    assert not os.path.exists(get_bundle_path('foo')+'.done')
+    assert not os.path.exists(get_bundle_path('foo') + '.done')
 
 
 def test_get_bundle_done(create_bundle_fix):
     response = client.get("/bundles/foo?done=True")
     assert response.status_code == 200
-    assert os.path.exists(get_bundle_path('foo')+'.done')
+    assert os.path.exists(get_bundle_path('foo') + '.done')
 
 
 UUIDs = [
@@ -63,7 +63,7 @@ def test_bundles_by_state(mocker):
     tars, done, purge = bundles_by_state()
     assert purge == [UUIDs[1]]
     assert done == [UUIDs[0], UUIDs[1]]
-    assert tars == [UUIDs[2]] 
+    assert tars == [UUIDs[2]]
 
 
 def test_list_bundles(mocker):
@@ -96,9 +96,9 @@ def test_create_bundle_no_processing(mocker):
 
 def test_create_bundle(mocker):
     bundle_config = BundleConfig(
-        install_uuid = 'install_1234',
-        tower_url_base = 'base_url_is_this',
-        instance_uuid = 'instance_12345',
+        install_uuid='install_1234',
+        tower_url_base='base_url_is_this',
+        instance_uuid='instance_12345',
     )
     config = create_bundle(bundle_config, process=False)
     temp_dir = tempfile.mkdtemp()
@@ -121,16 +121,17 @@ def test_delete_processed_bundles(mocker):
     bundles_by_state = mocker.patch(
         'api.main.bundles_by_state',
         return_value=[tars, done, purge])
-    remove_processed_bundles = mocker.patch('api.main.remove_processed_bundles')
+    remove_processed_bundles = mocker.patch(
+        'api.main.remove_processed_bundles')
     background_tasks = mocker.MagicMock()
     delete_bundles(background_tasks)
     bundles_by_state.assert_called_once()
-    background_tasks.add_task.assert_called_once_with(remove_processed_bundles, purge)
+    background_tasks.add_task.assert_called_once_with(
+        remove_processed_bundles, purge)
 
 
 def test_delete_a_non_existing_bundle(mocker):
     mocker.patch('os.path.isfile', return_value=False)
-    remove_processed_bundles = mocker.patch('api.main.remove_processed_bundles')
     background_tasks = mocker.MagicMock()
     with pytest.raises(HTTPException):
         delete_bundles(background_tasks, UUIDs[0])
@@ -139,7 +140,8 @@ def test_delete_a_non_existing_bundle(mocker):
 
 def test_delete_a_bundle(mocker):
     mocker.patch('os.path.isfile', return_value=True)
-    remove_processed_bundles = mocker.patch('api.main.remove_processed_bundles')
+    remove_processed_bundles = mocker.patch(
+        'api.main.remove_processed_bundles')
     background_tasks = mocker.MagicMock()
     delete_bundles(background_tasks, UUIDs[0])
     background_tasks.add_task.assert_called_once_with(

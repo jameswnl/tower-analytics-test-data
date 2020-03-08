@@ -37,7 +37,7 @@ try:
         bootstrap_servers=['{0}:{1}'.format(KAFKA_HOST, KAFKA_PORT)],
         value_serializer=lambda m: json.dumps(m).encode('ascii')
     )
-except:
+except Exception:
     logger.exception('Failed to connect to: %s:%s', KAFKA_HOST, KAFKA_PORT)
 
 
@@ -108,7 +108,7 @@ class TestDataGenerator:
         else:
             return 't'
 
-    def generate_job_events(self, data, jobs_count, events_count, tasks_count, 
+    def generate_job_events(self, data, jobs_count, events_count, tasks_count,
                             spread_days_back, starting_day, hosts_count):
         """
         Appends to the events table with a CSV data
@@ -120,7 +120,7 @@ class TestDataGenerator:
         output.write(data['events_table.csv'].decode())
         for job_id in range(jobs_count):
             for event_id in range(events_count):
-                id = ((events_count+1) * job_id) + event_id
+                id = ((events_count + 1) * job_id) + event_id
 
                 output.write('{id},{created},374c9e9c-561c-4222-acd4-91189dd95b1d,"",verbose_{module_id},'
                              'verbose_module_{module_id},{failed},{changed},"","","super_task_{module_id}",'
@@ -175,7 +175,7 @@ class TestDataGenerator:
         logger.info("bundle created: tempdir={}, bundle={}, size={}".format(
                     temp_dir, data_bundle, os.stat(data_bundle).st_size))
         end = time.time()
-        logger.info('handle_analytics_bundle time:%f', end-start)
+        logger.info('handle_analytics_bundle time:%f', end - start)
         shutil.rmtree(temp_dir)
         return data_bundle
 

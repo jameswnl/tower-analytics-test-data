@@ -27,6 +27,7 @@ jobs:
         flags: unittests # optional
         name: codecov-umbrella # optional
         fail_ci_if_error: true # optional (default = false)
+        post_status: true
     - name: lintly-flake8
       uses: grantmcconnaughey/lintly-flake8-github-action@v1.0
       with:

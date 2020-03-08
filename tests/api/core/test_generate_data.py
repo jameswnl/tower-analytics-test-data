@@ -1,16 +1,15 @@
-import os
 from datetime import datetime
-from pathlib import Path
 
-import pytest
 from api.core.generate_data import notify_upload
+
 
 def test_notify_upload(mocker):
     url = 'a_url'
     account_id = '1'
     tenant_id = 1
     bundle_id = '1' * 32
-    produce_upload_message = mocker.patch('api.core.generate_data.produce_upload_message')
+    produce_upload_message = mocker.patch(
+        'api.core.generate_data.produce_upload_message')
     time_now = datetime.fromtimestamp(1582845336)
     datetime_mock = mocker.patch('api.core.generate_data.datetime.datetime')
     datetime_mock.now.return_value = time_now

@@ -22,6 +22,7 @@ GH_AUTH_CLIENT_ID = os.getenv('GH_AUTH_CLIENT_ID')
 GH_AUTH_CLIENT_SECRET = os.getenv('GH_AUTH_CLIENT_SECRET')
 ALLOW_GH_ORGS = (os.getenv('ALLOW_GH_ORGS') or 'Ansible').split(',')
 
+
 class BundleConfig(BaseModel):
     unified_jobs: int = 1
     job_events: int = 1
@@ -65,7 +66,10 @@ if GH_AUTH_CLIENT_ID and GH_AUTH_CLIENT_SECRET:
     )
     logger.info('Github Authentication enabled')
 else:
-    logger.warning('GH_AUTH_CLIENT_ID and GH_AUTH_CLIENT_SECRET not set, no authentication is enabled')
+    logger.warning(('GH_AUTH_CLIENT_ID and GH_AUTH_CLIENT_SECRET not set,'
+        'no authentication is enabled')
+
+
 @app.get("/")
 async def root():
     return {"message": "Hello World"}
@@ -73,10 +77,11 @@ async def root():
 
 def remove_processed_bundles(to_del):
     logger.info('Removing processed %d bundles', len(to_del))
-    for uuid in to_del:
-        f = get_bundle_path(uuid)
+    for bundle_uuid in to_del:
+        f = get_bundle_path(bundle_uuid)
         logger.info('Removing %s', f)
         os.remove(f)
+
 
 def bundles_by_state():
     all = [f for f in listdir(BUNDLE_DIR)]
@@ -94,15 +99,15 @@ def list_bundles():
     """Listing bundles and status."""
     tars, done, _ = bundles_by_state()
     out = []
-    for uuid in tars:
-        out.append(BundleState(uuid=uuid, processed=False))
-    for uuid in done:
-        out.append(BundleState(uuid=uuid, processed=True))
+    for bundle_uuid in tars:
+        out.append(BundleState(uuid=bundle_uuid, processed=False))
+    for bundle_uuid in done:
+        out.append(BundleState(uuid=bundle_uuid, processed=True))
     return out
 
 
 @app.post("/bundles/")
-def create_bundle(config: BundleConfig, process: bool=True):
+def create_bundle(config: BundleConfig, process: bool = True):
     """Create a bundle and return an ID for later reference."""
     config.bundle_uuid = str(uuid.uuid4()).replace('-', '')
     TestDataGenerator().generate_bundle(config)
@@ -118,7 +123,7 @@ def create_bundle(config: BundleConfig, process: bool=True):
 
 
 @app.delete("/bundles/{bundle_id}")
-def delete_bundles(background_tasks: BackgroundTasks, bundle_id: str='processed'):
+def delete_bundles(bag_tasks: BackgroundTasks, bundle_id: str = 'processed'):
     """Delete bundle file(s)."""
     logger.info("Deleting bundle: %s", bundle_id)
     purge = [bundle_id]
@@ -131,12 +136,12 @@ def delete_bundles(background_tasks: BackgroundTasks, bundle_id: str='processed'
             raise HTTPException(
                 status_code=404,
                 detail="Bundle ID={} not found".format(bundle_id))
-    background_tasks.add_task(remove_processed_bundles, purge)
+    bag_tasks.add_task(remove_processed_bundles, purge)
     return "Deleting {} bundles: {}".format(len(purge), purge)
 
 
 @app.get("/bundles/{bundle_id}")
-def get_bundle(bundle_id: str, done: bool=False):
+def get_bundle(bundle_id: str, done: bool = False):
     """Return a bundle."""
     data_bundle = get_bundle_path(bundle_id)
     if not os.path.isfile(data_bundle):
@@ -155,4 +160,3 @@ def get_bundle(bundle_id: str, done: bool=False):
 def process_bundle(bundle_id: str, tenant_id: int, account_id: str = '123456'):
     """Push bundle to processor."""
     return notify_upload(HOST_URL, account_id, tenant_id, bundle_id)
-
