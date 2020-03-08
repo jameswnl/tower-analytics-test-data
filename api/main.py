@@ -66,8 +66,6 @@ if GH_AUTH_CLIENT_ID and GH_AUTH_CLIENT_SECRET:
     logger.info('Github Authentication enabled')
 else:
     logger.warning('GH_AUTH_CLIENT_ID and GH_AUTH_CLIENT_SECRET not set, no authentication is enabled')
-
-
 @app.get("/")
 async def root():
     return {"message": "Hello World"}

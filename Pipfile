@@ -8,7 +8,6 @@ pytest = "*"
 mypy = "*"
 pylama = "*"
 pytest-mock = "*"
-pytest-cov = "*"
 
 [packages]
 fastapi = {extras = ["all"],version = "*"}
