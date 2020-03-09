@@ -1,8 +1,6 @@
 # tower-analytics-test-data
 
-[![Python application Build](https://github.com/jameswnl/tower-analytics-test-data/workflows/Python%20application/badge.svg)](https://github.com/jameswnl/tower-analytics-test-data/actions)
-
-<object data="https://codecov.io/gh/jameswnl/tower-analytics-test-data/branch/master/graphs/sunburst.svg" type="image/svg+xml"></object>
+[![Python application Build](https://github.com/jameswnl/tower-analytics-test-data/workflows/Python%20application/badge.svg)](https://github.com/jameswnl/tower-analytics-test-data/actions) <img src='https://codecov.io/gh/jameswnl/tower-analytics-test-data/branch/master/graph/badge.svg'>
 
 API to generate test data for Automation Analytics
 
@@ -34,7 +32,7 @@ To guard the API service using GitHub OAuth app
 * Set the Authorization callback URL to `http://localhost:8000/-/auth-callback`
 
 ```
-   GH_AUTH_CLIENT_ID  # Github OAuth App client ID
+   GH_AUTH_CLIENT_ID  # Github OAuth App client ID  
    GH_AUTH_CLIENT_SECRET  # Github OAuth App client Secret
    ALLOW_GH_ORGS  # Allowed Github organizations. Default: Ansible
 ```
