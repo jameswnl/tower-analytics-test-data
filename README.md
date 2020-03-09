@@ -2,6 +2,8 @@
 
 [![Python application Build](https://github.com/jameswnl/tower-analytics-test-data/workflows/Python%20application/badge.svg)](https://github.com/jameswnl/tower-analytics-test-data/actions)
 
+<object data="https://codecov.io/gh/jameswnl/tower-analytics-test-data/branch/master/graphs/sunburst.svg" type="image/svg+xml"></object>
+
 API to generate test data for Automation Analytics
 
 ## Local setup
