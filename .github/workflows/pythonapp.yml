@@ -22,7 +22,6 @@ jobs:
       run: pipenv run coverage xml
     - uses: codecov/codecov-action@v1
       with:
-        # token: ${{ secrets.CODECOV_TOKEN }} # not required for public repos
         file: ./coverage.xml # optional
         flags: unittests # optional
         name: codecov-umbrella # optional
@@ -30,9 +29,6 @@ jobs:
     - name: lintly-flake8
       uses: grantmcconnaughey/lintly-flake8-github-action@v1.0
       with:
-        # The GitHub API token to create reviews with
         token: ${{ secrets.GITHUB_TOKEN }}
-        # Fail if "new" violations detected or "any", default "new"
         failIf: new
-        # Additional arguments to pass to flake8, default "." (current directory)
         args: "--ignore=E121 ."
