@@ -64,6 +64,16 @@ class TestDataGenerator:
                 tar.add(filename)
         return data_bundle
 
+    def _job_status(self, i):
+        if self.failed_job_threshold >= 0 and i % 200 >= self.failed_job_threshold:
+            return 'failed'
+        elif self.pending_job_threshold >= 0 and i % 200 >= self.pending_job_threshold:
+            return 'pending'
+        elif self.error_job_threshold >= 0 and i % 200 >= self.error_job_threshold:
+            return 'error'
+        else:
+            return 'successful'
+
     def _failed_job(self, i):
         # half of jobs will be failed
         if i % self.failed_job_modulo >= 100:
@@ -82,9 +92,9 @@ class TestDataGenerator:
         output.write(data['unified_jobs_table.csv'].decode())
         for job_id in range(jobs_count):
             output.write('{job_id},37,job,1,organization_{org_id},{created},template_name_{template_id},471,'
-                         'scheduled,19,localhost,"",f,{failed},f,{started},{finished},5.873,"",1\n'.format(
+                         'scheduled,19,localhost,"",f,{status},f,{started},{finished},5.873,"",1\n'.format(
                              created=self._default_date_time((job_id % spread_days_back) + starting_day),
-                             failed=self._failed_job(job_id),
+                             status=self._job_status(job_id),
                              started=self._default_date_time((job_id % spread_days_back) + starting_day, 1),
                              finished=self._default_date_time((job_id % spread_days_back) + starting_day, 5),
                              job_id=job_id,
@@ -120,6 +130,7 @@ class TestDataGenerator:
         output.write(data['events_table.csv'].decode())
         for job_id in range(jobs_count):
             for event_id in range(events_count):
+                id = self.starting_event_id + ((events_count+1) * job_id) + event_id
                 id = ((events_count+1) * job_id) + event_id
 
                 output.write('{id},{created},374c9e9c-561c-4222-acd4-91189dd95b1d,"",verbose_{module_id},'
@@ -155,6 +166,10 @@ class TestDataGenerator:
         spread_days_back = bundle_config.spread_days_back or 100
         starting_day = bundle_config.starting_day or 1
         hosts_count = bundle_config.hosts_count or 1
+        self.failed_job_threshold = bundle_config.failed_job_threshold or 100
+        self.pending_job_threshold = bundle_config.pending_job_threshold or -1
+        self.error_job_threshold = bundle_config.error_job_threshold or -1
+        self.starting_event_id = bundle_config.starting_event_id or 0
         self.failed_job_modulo = bundle_config.failed_job_modulo or 200
 
         temp_dir = tempfile.mkdtemp()

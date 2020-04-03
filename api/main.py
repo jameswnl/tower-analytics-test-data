@@ -38,6 +38,10 @@ class BundleConfig(BaseModel):
     install_uuid: str = ''
     instance_uuid: str = ''
     tower_url_base: str = ''
+    failed_job_threshold: int = 100
+    pending_job_threshold: int = -1
+    error_job_threshold: int = -1
+    starting_event_id: int = 0
 
 
 class BundleState(BaseModel):
