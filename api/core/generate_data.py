@@ -32,12 +32,26 @@ FILES = ['config.json',
          'unified_job_template_table.csv',
          'unified_jobs_table.csv']
 
+
+JOB_LINE = (
+    '{job_id},37,job,1,organization_{org_id},{created},'
+    'template_name_{template_id},471,'
+    'scheduled,19,localhost,"",f,{status},f,{started},{finished},5.873,"",1\n'
+)
+EVENT_LINE = (
+    '{id},{created},'
+    '374c9e9c-561c-4222-acd4-91189dd95b1d,"",verbose_{module_id},'
+    'verbose_module_{module_id},{failed},'
+    '{changed},"","","super_task_{module_id}",'
+    '"",{job_id},{host_id},"host_name_{host_id}"\n'
+)
+
 try:
     KAFKA_PRODUCER = KafkaProducer(
         bootstrap_servers=['{0}:{1}'.format(KAFKA_HOST, KAFKA_PORT)],
         value_serializer=lambda m: json.dumps(m).encode('ascii')
     )
-except:
+except Exception:
     logger.exception('Failed to connect to: %s:%s', KAFKA_HOST, KAFKA_PORT)
 
 
@@ -65,23 +79,24 @@ class TestDataGenerator:
         return data_bundle
 
     def _job_status(self, i):
-        if self.failed_job_threshold >= 0 and i % 200 >= self.failed_job_threshold:
+        if self.failed_job_threshold >= 0 and (
+            i % 200 >= self.failed_job_threshold
+        ):
             return 'failed'
-        elif self.pending_job_threshold >= 0 and i % 200 >= self.pending_job_threshold:
+        elif self.pending_job_threshold >= 0 and (
+            i % 200 >= self.pending_job_threshold
+        ):
             return 'pending'
-        elif self.error_job_threshold >= 0 and i % 200 >= self.error_job_threshold:
+        elif self.error_job_threshold >= 0 and (
+            i % 200 >= self.error_job_threshold
+        ):
             return 'error'
         else:
             return 'successful'
 
-    def _failed_job(self, i):
-        # half of jobs will be failed
-        if i % self.failed_job_modulo >= 100:
-            return 'failed'
-        else:
-            return 'successful'
-
-    def generate_unified_jobs(self, data, jobs_count, orgs_count, templates_count, spread_days_back, starting_day):
+    def generate_unified_jobs(
+            self, data, jobs_count, orgs_count,
+            templates_count, spread_days_back, starting_day):
         """
         Appends to the unified jobs table with a CSV data
 
@@ -91,16 +106,18 @@ class TestDataGenerator:
         output = io.StringIO()
         output.write(data['unified_jobs_table.csv'].decode())
         for job_id in range(jobs_count):
-            output.write('{job_id},37,job,1,organization_{org_id},{created},template_name_{template_id},471,'
-                         'scheduled,19,localhost,"",f,{status},f,{started},{finished},5.873,"",1\n'.format(
-                             created=self._default_date_time((job_id % spread_days_back) + starting_day),
-                             status=self._job_status(job_id),
-                             started=self._default_date_time((job_id % spread_days_back) + starting_day, 1),
-                             finished=self._default_date_time((job_id % spread_days_back) + starting_day, 5),
-                             job_id=job_id,
-                             org_id=job_id % orgs_count,
-                             template_id=job_id % templates_count
-                         ))
+            output.write(JOB_LINE.format(
+                created=self._default_date_time(
+                    (job_id % spread_days_back) + starting_day),
+                status=self._job_status(job_id),
+                started=self._default_date_time(
+                    (job_id % spread_days_back) + starting_day, 1),
+                finished=self._default_date_time(
+                    (job_id % spread_days_back) + starting_day, 5),
+                job_id=job_id,
+                org_id=job_id % orgs_count,
+                template_id=job_id % templates_count
+            ))
 
         data['unified_jobs_table.csv'] = output.getvalue().encode()
 
@@ -118,8 +135,9 @@ class TestDataGenerator:
         else:
             return 't'
 
-    def generate_job_events(self, data, jobs_count, events_count, tasks_count, 
-                            spread_days_back, starting_day, hosts_count):
+    def generate_job_events(
+            self, data, jobs_count, events_count, tasks_count,
+            spread_days_back, starting_day, hosts_count):
         """
         Appends to the events table with a CSV data
 
@@ -130,21 +148,23 @@ class TestDataGenerator:
         output.write(data['events_table.csv'].decode())
         for job_id in range(jobs_count):
             for event_id in range(events_count):
-                id = self.starting_event_id + ((events_count+1) * job_id) + event_id
-                id = ((events_count+1) * job_id) + event_id
+                id = (
+                    self.starting_event_id + ((events_count + 1) * job_id)
+                    + event_id
+                )
 
-                output.write('{id},{created},374c9e9c-561c-4222-acd4-91189dd95b1d,"",verbose_{module_id},'
-                             'verbose_module_{module_id},{failed},{changed},"","","super_task_{module_id}",'
-                             '"",{job_id},{host_id},"host_name_{host_id}"\n'.format(
-                                 created=self._default_date_time((job_id % spread_days_back) + starting_day,
-                                                                 event_id % 60),
-                                 failed=self._failed_event(event_id),
-                                 changed=self._changed_event(event_id),
-                                 job_id=job_id,
-                                 id=id,
-                                 module_id=event_id % tasks_count,
-                                 host_id=id % hosts_count
-                             ))
+                output.write(EVENT_LINE.format(
+                    created=self._default_date_time(
+                        job_id % spread_days_back + starting_day,
+                        event_id % 60
+                    ),
+                    failed=self._failed_event(event_id),
+                    changed=self._changed_event(event_id),
+                    job_id=job_id,
+                    id=id,
+                    module_id=event_id % tasks_count,
+                    host_id=id % hosts_count
+                ))
 
         data['events_table.csv'] = output.getvalue().encode()
 
@@ -190,7 +210,7 @@ class TestDataGenerator:
         logger.info("bundle created: tempdir={}, bundle={}, size={}".format(
                     temp_dir, data_bundle, os.stat(data_bundle).st_size))
         end = time.time()
-        logger.info('handle_analytics_bundle time:%f', end-start)
+        logger.info('handle_analytics_bundle time:%f', end - start)
         shutil.rmtree(temp_dir)
         return data_bundle
 
