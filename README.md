@@ -53,4 +53,14 @@ open http://localhost:8000/docs
 * Build the docker image using the `Dockerfile`
 * Set the env for the deployment config
 
+## More info
+
+[Slides](https://docs.google.com/presentation/d/14xFloGBtw7kw8nrjws2-ZwvMWbICWJoSACMrarQP2yk/edit#slide=id.g8812ab03b5_0_0)
+
+## Usage
+
+[A short video](https://drive.google.com/open?id=1uPvabDyGcbTqDLdlDbf_Dq9GEdWXgIcG)
+
+
+
 
