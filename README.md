@@ -55,7 +55,7 @@ open http://localhost:8000/docs
 
 ## More info
 
-[Slides](https://docs.google.com/presentation/d/14xFloGBtw7kw8nrjws2-ZwvMWbICWJoSACMrarQP2yk/edit#slide=id.g8812ab03b5_0_0)
+[Slides to show how it works](https://docs.google.com/presentation/d/e/2PACX-1vRbZGO6bYpk2Q090atWifaS8UjhcuCaiPkT7wZ4TZDKYZlRzsI1uNBvk0wnZXrFeMqB2dkB-6AtHJWt/pub?start=true&loop=false&delayms=3000)
 
 ## Usage
 
