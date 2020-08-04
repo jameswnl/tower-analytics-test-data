@@ -12,7 +12,7 @@ pytest-cov = "*"
 
 [packages]
 fastapi = {extras = ["all"],version = "*"}
-uvicorn = "*"
+uvicorn = ">=0.11.7"
 gunicorn = "*"
 kafka-python = "*"
 datasette = "*"
