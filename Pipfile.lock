@@ -32,9 +32,10 @@
         },
         "asgi-csrf": {
             "hashes": [
-                "sha256:f72c3959562488e19657af2b5b0a50e620174743fdebf59059b6c4e182d0cbf1"
+                "sha256:4045b8b45c330e068b8b96f914e585ea69228efbfe574ab4a4be2d8c6009a19f",
+                "sha256:6f4104342a6f4cdbb6e9b3c63bf7d540aaa1d978d711cf0e56a6cc919c25fa10"
             ],
-            "version": "==0.6"
+            "version": "==0.6.1"
         },
         "async-exit-stack": {
             "hashes": [
@@ -127,10 +128,11 @@
         },
         "datasette": {
             "hashes": [
-                "sha256:a6491e7a9fd1d2fa1b9999d31b1f210b9a845960c1905e3fdfc2783071143980"
+                "sha256:376f586211b8ee4b1864062a778b7a50feae2cce8b0a292d6ed16ccaa2ba59ea",
+                "sha256:eb5e5dcb8a0957ed1def841108576afb15a38ce61d222bf54a25d827999ad521"
             ],
             "index": "pypi",
-            "version": "==0.45"
+            "version": "==0.46"
         },
         "datasette-auth-github": {
             "editable": true,
